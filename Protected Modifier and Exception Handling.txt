@@ -1,0 +1,170 @@
+1. Explain the protected access modifier in Java. In which scenarios is it most useful, and how does it differ from private and public modifiers?
+->The protected access modifier allows access to the member from within its own package and by subclasses (derived classes) in other packages.
+
+    Scenarios of using -
+    Inheritance- When designing a class hierarchy where you want subclasses to have access to certain members but do not want these members to be accessible to the rest of the application, you use protected.
+    Frameworks and Libraries-  When creating frameworks or libraries, you might use protected to allow users to extend and customize base classes without exposing all implementation details.
+
+    Comparison with private and public
+    Private-  Members are accessible only within the class they are declared in.
+                   Promotes strong encapsulation but restricts inheritance.
+                   Suitable for internal details that should not be exposed to derived classes or other classes.
+    Public-  Members are accessible from any other class.
+                  Offers the least encapsulation, making it useful for API methods or fields meant for public use.
+                  Suitable for methods or constants that are intended to be universally accessible.
+    Protected-  A balance between private and public.
+                        Allows subclass-specific access and package-level access while keeping details hidden from unrelated classes.
+                        Useful in class hierarchies to enable controlled extension and modification of base class behavior.
+
+2. If a class is defined in one package and a subclass is defined in another package, can the subclass access the protected members of the superclass? Provide an example to illustrate your answer.
+->Yes, a subclass can access the protected members of its superclass, even if the superclass and subclass are in different packages. In Java, protected members are accessible to subclasses, regardless of whether the subclass is in the same package as the superclass or not.
+
+package package1;
+
+public class SuperClass {
+    protected String protectedMember = "I am protected";
+
+    protected void protectedMethod() {
+        System.out.println("Protected method in SuperClass");
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+package package2;
+
+import package1.SuperClass;
+
+public class SubClass extends SuperClass {
+
+    public void accessProtectedMembers() {
+        System.out.println("Protected member: " + protectedMember);
+        protectedMethod();
+    }
+
+    public static void main(String[] args) {
+        SubClass subClass = new SubClass();
+        subClass.accessProtectedMembers();
+    }
+}
+
+3. How does the protected access modifier behave in the context of inheritance and package visibility? Give a scenario where using protected would be more appropriate than using private or public.
+-> The protected access modifier in Java provides a level of access control that is more permissive than private but more restrictive than public. Here's how it behaves in the context of inheritance and package visibility-
+
+package framework;
+
+public class FrameworkComponent {
+    protected String componentName;
+
+    public FrameworkComponent(String name) {
+        this.componentName = name;
+    }
+
+    protected void initialize() {
+        System.out.println("Initializing component: " + componentName);
+    }
+
+    public void render() {
+        System.out.println("Rendering component: " + componentName);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+package custom;
+
+import framework.FrameworkComponent;
+
+public class CustomComponent extends FrameworkComponent {
+    public CustomComponent(String name) {
+        super(name);
+    }
+
+    @Override
+    protected void initialize() {
+        // Custom initialization code
+        System.out.println("Custom initializing component: " + componentName);
+    }
+
+    public static void main(String[] args) {
+        CustomComponent myComponent = new CustomComponent("MyCustomComponent");
+        myComponent.initialize(); // Accessing protected method
+        myComponent.render();     // Accessing public method
+    }
+}
+
+4. Describe the purpose of the try and catch blocks in Java exception handling. How does the finally block complement these, and when would you use it?
+-> The try block contains code that might throw an exception.
+     The catch block is used to handle exceptions that occur in the try block.
+     The finally block is used to execute code after the try and catch blocks, regardless of whether an exception was thrown or caught.
+     
+public class SimpleExceptionHandling {
+    public static void main(String[] args) {
+        int[] numbers = {1, 2, 3};
+        try {
+            int number = numbers[5];
+            System.out.println("Number: " + number);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Exception caught: " + e.getMessage());
+        } finally {
+            System.out.println("This will always be printed, regardless of whether an exception occurred.");
+        }
+        System.out.println("Program continues after the try-catch-finally block.");
+    }
+}
+Output- 
+Exception caught: Index 5 out of bounds for length 3
+This will always be printed, regardless of whether an exception occurred.
+Program continues after the try-catch-finally block.
+
+5. What happens if an exception is thrown in a try block but there is no corresponding catch block to handle that exception? Illustrate with an example.
+-> If an exception is thrown in a try block but there is no corresponding catch block to handle that specific type of exception, the exception will propagate up the call stack.
+    If the exception is not caught and handled by any method along the call stack, it will eventually cause the program to terminate and print a stack trace.
+public class UnhandledExceptionExample {
+    public static void main(String[] args) {
+        try {
+            // Code that may throw an exception
+            int result = divide(10, 0);
+            System.out.println("Result: " + result);
+        } finally {
+            // Finally block will still execute
+            System.out.println("This will always be printed, regardless of whether an exception occurred.");
+        }
+        System.out.println("This line will not be printed if an exception is not caught.");
+    }
+    public static int divide(int a, int b) {
+        return a / b; // This will throw an ArithmeticException if b is 0
+    }
+}
+Output-
+This will always be printed, regardless of whether an exception occurred.
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+    at UnhandledExceptionExample.divide(UnhandledExceptionExample.java:16)
+    at UnhandledExceptionExample.main(UnhandledExceptionExample.java:7)
+
+6. Can you have multiple catch blocks for a single try block in Java? If yes, explain how Java determines which catch block to execute when an exception is thrown.
+->Yes, you can have multiple catch blocks for a single try block in Java. Each catch block is designed to handle a specific type of exception. When an exception is thrown in the try block,
+    Java will check each catch block in the order they appear and execute the first one that matches the type of the thrown exception.
+
+public class MultipleCatchExample {
+    public static void main(String[] args) {
+        try {
+            int[] numbers = {1, 2, 3};
+            int number = numbers[5];
+            System.out.println("Number: " + number);
+            int result = 10 / 0;
+            System.out.println("Result: " + result);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Array index out of bounds: " + e.getMessage());
+        } catch (ArithmeticException e) {
+            System.out.println("Arithmetic error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("General exception: " + e.getMessage());
+        } finally {
+            System.out.println("This will always be printed, regardless of whether an exception occurred.");
+        }
+        System.out.println("Program continues after the try-catch-finally block.");
+    }
+}
+Output-
+Array index out of bounds: Index 5 out of bounds for length 3
+This will always be printed, regardless of whether an exception occurred.
+Program continues after the try-catch-finally block.
